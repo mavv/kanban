@@ -5,7 +5,7 @@ var body = document.body;
 const PIXI = require('pixi.js');
 const renderer = new PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
 const container = new PIXI.Container();
-const sprite = new PIXI.Sprite.fromImage('');
+const sprite = new PIXI.Sprite.fromImage(require('./assets/myhouse.jpg'));
 
 // body.style.overflow = 'hidden';
 // app.appendChild(component());
@@ -20,7 +20,7 @@ function loadProgressHandler(loader, resource) {
 function setupAnimate() {
     sprite.anchor.set(0.5);
     sprite.position.set(renderer.width / 2, renderer.height / 2);
-    sprite.scale.set(0.3);
+    sprite.scale.set(0.5);
     container.addChild(sprite);
 }
 
@@ -31,6 +31,6 @@ function animate() {
 
 PIXI
   .loader
-  .add(['./assets/myhouse.jpg'])
+  .add(['./'])
   .on('progress', loadProgressHandler)
   .load(setupAnimate);
