@@ -28,22 +28,27 @@ module.exports = {
   ],
   module: {
     loaders: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel'
-      },
-      {
-        test: /\.json$/,
-        loader: 'json'
-      },
-      {
-        test: /\.less$/,
-        loader: "style!css!autoprefixer!less"
-      },
-      {
-        test: /\.(jpe?g|png|gif|svg)$/i, loader: 'file?limit=10000!img?progressive=true'
-      } // inline base64 URLs for <=8k images, direct URLs for the rest
+        {
+            test: /\.js$/,
+            exclude: /node_modules/,
+            loader: 'babel'
+        },
+        {
+            test: /\.json$/,
+            loader: 'json'
+        },
+        {
+            test: /\.less$/,
+            loader: "style!css!autoprefixer!less"
+        },
+        {
+            test: /\.(jpe?g|png|gif|svg)$/i,
+            loader: 'file?limit=10000!img?progressive=true'
+        },
+        {
+            test: /\.glsl$/,
+            loader: 'shader'
+        },
     ],
     postLoaders: [
       {

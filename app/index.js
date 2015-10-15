@@ -5,7 +5,7 @@ var body = document.body;
 const PIXI = require('pixi.js');
 const renderer = new PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
 const container = new PIXI.Container();
-const sprite = new PIXI.Sprite.fromImage(require('./assets/myhouse.jpg'));
+const sprite = new PIXI.Sprite.fromImage(require('./assets/bean.jpg'));
 
 // body.style.overflow = 'hidden';
 // app.appendChild(component());
