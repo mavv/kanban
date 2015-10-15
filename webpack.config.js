@@ -7,6 +7,8 @@ module.exports = {
     './app/some.less',
     './app/index'
     ],
+    devtool: "source-map",
+    debug: true,
     output: {
     path: 'build',
     filename: 'bundle.js'
@@ -26,16 +28,20 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin()
     ],
+    node: {
+        fs: "empty" // this is for pixi.js
+    },
     module: {
         loaders: [
+            {
+                test: /\.json$/,
+                include: path.join(__dirname, 'node_modules', 'pixi.js'),
+                loader: 'json'
+            },
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 loader: 'babel'
-            },
-            {
-                test: /\.json$/,
-                loader: 'json'
             },
             {
                 test: /\.less$/,
@@ -52,17 +58,13 @@ module.exports = {
         ],
         postLoaders: [
             {
-                loader: "transform-loader?brfs",
-                include: path.resolve('/node_modules/pixi.js')
+                loader: "transform?brfs"
             }
         ],
     },
     resolve: {
     // you can now require('file') instead of require('file.js')
     extensions: ['', '.js', '.json', 'less', 'glsl']
-    },
-    node: {
-        fs: "empty"
     },
     glsl: {
         chunkPath: 'chunks'

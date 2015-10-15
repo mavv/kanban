@@ -57,9 +57,10 @@ function setupAnimate() {
     spriteBg.height = height / 2;
     spriteBg.position.set(renderer.width / 2, renderer.height / 2);
     // console.log(frag);
-    filter = new PIXI.AbstractFilter(null, frag, uniforms);
+    filter = new PIXI.AbstractFilter(vert, null, uniforms);
     // sprite.shader = filter;
     spriteBg.filters = [filter];
+    // spriteBg.filters = [ new PIXI.filters.NoiseFilter(0.5)];
     container.addChild(spriteBg);
 
     sprite.anchor.set(0.5);

@@ -3,13 +3,13 @@
 #endif
 
 uniform vec2 resolution;
-uniform float time;
+uniform float timeLapse;
 uniform sampler2D sampler;
 uniform float noiseValue;
 uniform float scratchValue;
 uniform float randomValue;
 
-varying vec2 vUv;
+varying vec2 vwUv;
 
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
 vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -61,24 +61,25 @@ float snoise (vec2 v)
 }
 
 void main() {
-    float noise = snoise(vUv * vec2(1024.0 + randomValue * 512.0, 1024.0 + randomValue * 512.0)) * 0.5;
+    vec3 finalColour = texture2D(sampler, vwUv).xyz;
+    float noise = snoise(vwUv * vec2(1024.0 + randomValue * 512.0, 1024.0 + randomValue * 512.0)) * 0.5;
 	finalColour += noise * noiseValue;
 
     // Step 5: Apply scratches
-	if ( RandomValue < scratchValue )
+	if ( randomValue < scratchValue )
 	{
 		// Pick a random spot to show scratches
 		float dist = 1.0 / scratchValue;
-		float d = distance(vUv, vec2(RandomValue * dist, RandomValue * dist));
+		float d = distance(vwUv, vec2(randomValue * dist, randomValue * dist));
 		if ( d < 0.4 )
 		{
 			// Generate the scratch
 			float xPeriod = 8.0;
 			float yPeriod = 1.0;
 			float pi = 3.141592;
-			float phase = TimeLapse;
-			float turbulence = snoise(vUv * 2.5);
-			float vScratch = 0.5 + (sin(((vUv.x * xPeriod + vUv.y * yPeriod + turbulence)) * pi + phase) * 0.5);
+			float phase = timeLapse;
+			float turbulence = snoise(vwUv * 2.5);
+			float vScratch = 0.5 + (sin(((vwUv.x * xPeriod + vwUv.y * yPeriod + turbulence)) * pi + phase) * 0.5);
 			vScratch = clamp((vScratch * 10000.0) + 0.35, 0.0, 1.0);
 
 			finalColour.xyz *= vScratch;
