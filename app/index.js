@@ -5,8 +5,11 @@ var component = require('./component');
 var app = document.createElement('div');
 var body = document.body;
 var PIXI = require('pixi.js');
-var renderer = new PIXI.autoDetectRenderer(width, height);
+var renderer = new PIXI.autoDetectRenderer(width, height, {
+    backgroundColor: 0x000000
+});
 var container = new PIXI.Container();
+// var spriteBg = new PIXI.Sprite.fromImage(require('./assets/bg.jpg'));
 var spriteBg = new PIXI.Sprite.fromImage(require('./assets/bg.jpg'));
 var sprite = new PIXI.Sprite.fromImage(require('./assets/bean.jpg'));
 var vert = require('./vert.glsl');
@@ -19,9 +22,21 @@ var uniforms = {
             y: height
         }
     },
-    time: {
+    timeLapse: {
         type: '1f',
-        value: 0
+        value: 0.0
+    },
+    noiseValue: {
+        type: '1f',
+        value: 0.0
+    },
+    scratchValue: {
+        type: '1f',
+        value: 0.3
+    },
+    randomValue: {
+        type: '1f',
+        value: 0.0
     }
 };
 var count = 0;
@@ -39,9 +54,9 @@ function loadProgressHandler(loader, resource) {
 function setupAnimate() {
     spriteBg.anchor.set(0.5);
     spriteBg.width = width;
-    // spriteBg.height = height;
+    spriteBg.height = height / 2;
     spriteBg.position.set(renderer.width / 2, renderer.height / 2);
-    console.log(frag);
+    // console.log(frag);
     filter = new PIXI.AbstractFilter(null, frag, uniforms);
     // sprite.shader = filter;
     spriteBg.filters = [filter];
