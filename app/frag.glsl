@@ -1,26 +1,46 @@
-#ifdef GL_ES
-	precision highp float;
-#endif
+precision highp float;
 
-uniform vec2 resolution;
-uniform float timeLapse;
-uniform sampler2D sampler;
+#define PI 3.14159265359
+
+
+uniform float randomValue;
 uniform float noiseValue;
 uniform float scratchValue;
-uniform float randomValue;
 
-varying vec2 vwUv;
+uniform sampler2D uSampler;
+uniform vec2 uResolution;
+uniform float timeLapse;
 
-vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+varying vec2 vTextureCoord;
 
-float snoise (vec2 v)
-{
+const float scratchDistance = .8; // leave this to 0.6, kthxbye
+const float xPeriod = 1.;
+const float yPeriod = 1.;
+const float multi = .3;
+
+vec3 Overlay (vec3 src, vec3 dst) {
+	return vec3((dst.x <= 0.5) ? (2.0 * src.x * dst.x) : (1.0 - 2.0 * (1.0 - dst.x) * (1.0 - src.x)),
+				(dst.y <= 0.5) ? (2.0 * src.y * dst.y) : (1.0 - 2.0 * (1.0 - dst.y) * (1.0 - src.y)),
+				(dst.z <= 0.5) ? (2.0 * src.z * dst.z) : (1.0 - 2.0 * (1.0 - dst.z) * (1.0 - src.z)));
+}
+
+vec2 mod289(vec2 x) {
+	return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+vec3 mod289(vec3 x) {
+	return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+vec3 permute(vec3 x) {
+	return mod289(((x*34.0)+1.0)*x);
+}
+
+float snoise (vec2 v) {
 	const vec4 C = vec4(0.211324865405187,	// (3.0-sqrt(3.0))/6.0
-						0.366025403784439,	// 0.5*(sqrt(3.0)-1.0)
-						-0.577350269189626,	// -1.0 + 2.0 * C.x
-						0.024390243902439);	// 1.0 / 41.0
+				0.366025403784439,	// 0.5*(sqrt(3.0)-1.0)
+				-0.577350269189626,	// -1.0 + 2.0 * C.x
+				0.024390243902439);	// 1.0 / 41.0
 
 	// First corner
 	vec2 i  = floor(v + dot(v, C.yy) );
@@ -60,83 +80,64 @@ float snoise (vec2 v)
 	return 130.0 * dot(m, g);
 }
 
-void main() {
-    vec3 finalColour = texture2D(sampler, vwUv).xyz;
-    float noise = snoise(vwUv * vec2(1024.0 + randomValue * 512.0, 1024.0 + randomValue * 512.0)) * 0.5;
+void main()
+{
+
+	vec3 colour = texture2D(uSampler, vTextureCoord).xyz;
+    vec3 finalColour = colour;
+
+
+
+    float noise = snoise(vTextureCoord * vec2(1024. + randomValue * 512., 1024. + randomValue * 512.)) * 0.5;
 	finalColour += noise * noiseValue;
+	vec3 noiseOverlay = Overlay(finalColour, vec3(noise));
+	finalColour = finalColour + clamp(.1 * (finalColour - noiseOverlay), 0., 1.);
 
-    // Step 5: Apply scratches
-	if ( randomValue < scratchValue )
-	{
-		// Pick a random spot to show scratches
-		float dist = 1.0 / scratchValue;
-		float d = distance(vwUv, vec2(randomValue * dist, randomValue * dist));
-		if ( d < 0.4 )
-		{
-			// Generate the scratch
-			float xPeriod = 8.0;
-			float yPeriod = 1.0;
-			float pi = 3.141592;
-			float phase = timeLapse;
-			float turbulence = snoise(vwUv * 2.5);
-			float vScratch = 0.5 + (sin(((vwUv.x * xPeriod + vwUv.y * yPeriod + turbulence)) * pi + phase) * 0.5);
-			vScratch = clamp((vScratch * 10000.0) + 0.35, 0.0, 1.0);
+    float dist = 1.0 / scratchValue;
+    float d = distance(vTextureCoord, vec2(randomValue * dist));
 
-			finalColour.xyz *= vScratch;
+	if (d < scratchDistance) {
+		// TODO: extract constants
+		float turbulence = snoise(vTextureCoord * 2.66) * .5; //clamp(snoise(vTextureCoord * 2.5), .4, .8);
+		float vScratch = 0.;
+		float scratchBase = (vTextureCoord.x * xPeriod + vTextureCoord.y * yPeriod + turbulence) * PI + timeLapse;
+		if (randomValue < 20.) {
+			vScratch = multi + sin(scratchBase) * multi;//multi + sin(scratchBase) * multi;//multi + sin(scratchBase) * multi;
+			// vScratch = clamp((vScratch * 50000.) + .0001, .0, 1.);
+		} else if (randomValue < 40.) {
+			vScratch = multi + cos(scratchBase) * multi;
+			// vScratch = clamp((vScratch * 50000.) + .0001, .0, 1.);
+		} else if (randomValue < 60.) {
+			vScratch /= 4.;
+		} else if (randomValue < 80.) {
+			vScratch /= 4.;
+		} else {
+			vScratch /= 4.;
 		}
+		// if (randomValue < 50.) {
+		// 	vScratch = multi + sin(scratchBase) * multi;//multi + sin(scratchBase) * multi;//multi + sin(scratchBase) * multi;
+		// 	// vScratch = clamp((vScratch * 50000.) + .0001, .0, 1.);
+		// } else {
+		// 	vScratch = multi + cos(scratchBase) * multi;
+		// 	// vScratch = clamp((vScratch * 50000.) + .0001, .0, 1.);
+		// }
+		// if (randomValue < 25.) {
+		// 	vScratch = multi + sin(scratchBase) * multi;
+		// 	vScratch = clamp((vScratch * 10000.) + .1, .0, 1.);
+		// } else if (randomValue < 50.){
+		// 	vScratch = multi + cos(scratchBase) * multi;
+		// 	vScratch = clamp((vScratch * 10000.) + .1, .0, 1.);
+		// } else if (randomValue < 75.){
+		// 	vScratch = multi + sin(fract(pow(scratchBase, 3.))) * multi;
+		// 	vScratch = clamp((vScratch * 10000.) + .1, .0, 1.);
+		// } else {
+		// 	vScratch = multi + cos(fract(pow(scratchBase, 3.))) * multi;
+		// 	vScratch = clamp((vScratch * 10000.) + .1, .0, 1.);
+		// }
+		vScratch = clamp((vScratch * 10000.) + .3, .0, 1.);
+		finalColour.xyz /= vScratch; //smoothstep(0., 1., vScratch);
 	}
+
+
+    gl_FragColor = vec4(finalColour, 1.);
 }
-// precision mediump float;
-//
-// uniform vec2 resolution;
-// uniform float time;
-//
-// varying vec2 vTextureCoord;
-// uniform sampler2D uSampler;
-//
-//
-// // 2D Random
-// float random (in vec2 st) {
-//     return fract(sin(dot(st.xy,
-//                          vec2(12.9898,78.233)))
-//                  * 43758.5453123);
-// }
-//
-// // 2D Noise based on Morgan McGuire @morgan3d
-// // https://www.shadertoy.com/view/4dS3Wd
-// float noise (in vec2 st) {
-//     vec2 i = floor(st);
-//     vec2 f = fract(st);
-//
-//     // Four corners in 2D of a tile
-//     float a = random(i) * time;
-//     float b = random(i + vec2(1.0, 0.0));
-//     float c = random(i + vec2(0.0, 1.0));
-//     float d = random(i + vec2(1.0, 1.0));
-//
-//     // Smooth Interpolation
-//
-//     // Cubic Hermine Curve.  Same as SmoothStep()
-//     vec2 u = f*f*(3.0-2.0*f);
-//     // u = smoothstep(0.,1.,f);
-//
-//     // Mix 4 coorners porcentages
-//     return mix(a, b, u.x) +
-//             (c - a)* u.y * (1.0 - u.x) +
-//             (d - b) * u.x * u.y;
-// }
-//
-// void main(void)
-// {
-//     vec4 pixel = texture2D(uSampler, vTextureCoord);
-//     // pixel.r = 0.1;
-//     // pixel.g = 0.2;
-//     // pixel.b = 0.3;
-//     pixel.a = 0.;
-//     gl_FragColor = pixel;
-//
-//     // vec2 st = gl_FragColor.xy / resolution.xy;
-//     // vec2 pos = vec2(st*5.0);
-//     // float n = noise(pos);
-//     // gl_FragColor = vec4(vec3(n), 1.0);
-// }
