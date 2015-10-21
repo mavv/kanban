@@ -3,31 +3,54 @@ var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: [
-    './app/some.less',
-    './app/index'
-  ],
+  entry: {
+    app: [
+      './app/assets/less/some.less',
+      './app/assets/js/index'
+    ],
+    vendor: [
+      'pixi.js'
+    ]
+  },
   output: {
     path: 'build',
-    filename: 'bundle.js'
+    chunkFilename: '[name]',
+    filename: '[name].[ext]',
+    sourceMapFilename: '[name].map'
   },
+  debug: true,
+  devtool: 'source-map',
   devServer: {
     historyApiFallback: true,
     hot: true,
     inline: true,
     progress: true,
-    contentBase: './build/assets/'
+    contentBase: './build/'
   },
   plugins: [
+    new webpack.optimize.CommonsChunkPlugin({
+      name: "vendor",
+      children: true,
+      // filename: "vendor.js"
+      // (Give the chunk a different name)
+
+      minChunks: Infinity,
+      // (with more entries, this ensures that no other module
+      //  goes into the vendor chunk)
+    }),
     new HtmlWebpackPlugin({
       title: '@play',
-      filename: 'index.html'
+      filename: 'app/assets/html/index-tmpl'
     }),
+    new webpack.NoErrorsPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin()
   ],
   module: {
     loaders: [
+      {
+        test: /\.(woff|ttf|otf|eot)$/,
+        loader: 'file-loader?name=app/assets/img/fonts/[name].[ext]'
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,

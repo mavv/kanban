@@ -1,3 +1,5 @@
+const tween = require('tween.js');
+
 function element() {
   let element = document.createElement('h1');
 

@@ -2,7 +2,7 @@
   "name": "kanban",
   "version": "1.0.0",
   "description": "",
-  "main": "app/index.js",
+  "main": "app/js/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server"
@@ -16,6 +16,8 @@
     "babel-loader": "^5.3.2",
     "brfs": "^1.4.1",
     "css-loader": "^0.19.0",
+    "eslint": "^1.7.3",
+    "eslint-loader": "^1.1.0",
     "file-loader": "^0.8.4",
     "html-webpack-plugin": "^1.6.2",
     "img-loader": "^1.2.0",
@@ -29,8 +31,12 @@
     "webpack": "^1.12.2",
     "webpack-dev-server": "^1.12.0"
   },
-  "repository" :
-  { "type" : "git"
-  , "url" : "https://github.com/mavv/kanban.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mavv/kanban.git"
+  },
+  "dependencies": {
+    "pixi.js": "^3.0.8",
+    "tween.js": "^16.3.1"
   }
 }
