@@ -21,7 +21,6 @@ module.exports = {
     },
     plugins: [
     new HtmlWebpackPlugin({
-      title: '@play',
       filename: 'index.html',
 			template: './app/index.html',
 			inject: 'body'
