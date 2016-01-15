@@ -5,23 +5,26 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     entry: [
     './app/some.less',
-    './app/index'
+    './app/index',
+		'./app/index.html'
     ],
     output: {
     path: 'build',
     filename: 'bundle.js'
     },
     devServer: {
-    historyApiFallback: true,
-    hot: true,
-    inline: true,
-    progress: true,
-    contentBase: './build/assets/'
+	    historyApiFallback: true,
+	    hot: true,
+	    inline: true,
+	    progress: true,
+	    contentBase: './'
     },
     plugins: [
     new HtmlWebpackPlugin({
       title: '@play',
-      filename: 'index.html'
+      filename: 'index.html',
+			template: './app/index.html',
+			inject: 'body'
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin()
@@ -39,16 +42,20 @@ module.exports = {
             },
             {
                 test: /\.less$/,
-                loader: "style!css!autoprefixer!less"
+                loader: 'style!css!autoprefixer!less'
             },
-            {
-                test: /\.(jpe?g|png|gif|svg)$/i,
-                loader: 'file?limit=10000!img?progressive=true'
-            },
-            {
-                test: /\.glsl$/,
-                loader: 'shader'
-            },
+						{
+								test: /\.html$/,
+								loader: 'html'
+						}
+            // {
+            //     test: /\.(jpg|jpeg|png|gif|svg)$/i,
+            //     loader: 'file?limit=10000!img?progressive=true'
+            // },
+            // {
+            //     test: /\.glsl$/,
+            //     loader: 'shader'
+            // },
         ],
         postLoaders: [
             {

@@ -17,6 +17,7 @@
     "brfs": "^1.4.1",
     "css-loader": "^0.19.0",
     "file-loader": "^0.8.4",
+    "html-loader": "^0.4.0",
     "html-webpack-plugin": "^1.6.2",
     "img-loader": "^1.2.0",
     "json-loader": "^0.5.3",

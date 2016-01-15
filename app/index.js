@@ -1,4 +1,4 @@
-
+//
 var width = window.innerWidth;
 var height = window.innerHeight;
 var component = require('./component');
@@ -7,10 +7,10 @@ var body = document.body;
 var PIXI = require('pixi.js');
 var renderer = new PIXI.autoDetectRenderer(width, height);
 var container = new PIXI.Container();
-var spriteBg = new PIXI.Sprite.fromImage(require('./assets/bg.jpg'));
-var sprite = new PIXI.Sprite.fromImage(require('./assets/bean.jpg'));
-var vert = require('./vert.glsl');
-var frag = require('./frag.glsl');
+var spriteBg = new PIXI.Sprite.fromImage('../static/nl.jpg');
+// var sprite = new PIXI.Sprite.fromImage('nl.jpg');
+// var vert = require('./vert.glsl');
+// var frag = require('./frag.glsl');
 var uniforms = {
     resolution: {
         type: '2f',
@@ -41,16 +41,16 @@ function setupAnimate() {
     spriteBg.width = width;
     // spriteBg.height = height;
     spriteBg.position.set(renderer.width / 2, renderer.height / 2);
-    console.log(frag);
-    filter = new PIXI.AbstractFilter(null, frag, uniforms);
+    // console.log(frag);
+    // filter = new PIXI.AbstractFilter(null, frag, uniforms);
     // sprite.shader = filter;
-    spriteBg.filters = [filter];
+    // spriteBg.filters = [filter];
     container.addChild(spriteBg);
 
-    sprite.anchor.set(0.5);
-    sprite.position.set(renderer.width / 2, renderer.height / 2);
-    sprite.scale.set(0.5);
-    sprite.blendMode = PIXI.BLEND_MODES.ADD;
+    // sprite.anchor.set(0.5);
+    // sprite.position.set(renderer.width / 2, renderer.height / 2);
+    // sprite.scale.set(0.5);
+    // sprite.blendMode = PIXI.BLEND_MODES.ADD;
     // container.addChild(sprite);
 
 }
